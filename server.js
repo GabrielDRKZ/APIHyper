@@ -71,7 +71,11 @@ app.get('/whatsapp/authV2', async (req, res) => {
 app.get('/whatsapp/saveUser', async (req, res) => {
     try {
         const { userName, phoneNumber } = req.query;
-        console.log(`Recebida consulta para o usuário ${userName} com o número de telefone ${phoneNumber}`);
+
+        // Verifica se userName e phoneNumber foram fornecidos na URL
+        if (!userName || !phoneNumber) {
+            return res.status(400).json({ error: 'Parâmetros userName e phoneNumber são necessários' });
+        }
         
         // Verifica se o usuário já existe no banco de dados
         const existingUser = await UserModel.findOne({ userName, phoneNumber });
@@ -95,7 +99,6 @@ app.get('/whatsapp/saveUser', async (req, res) => {
         res.status(500).json({ error: 'Erro ao salvar usuário' });
     }
 });
-
 
 // Iniciar o servidor
 app.listen(PORT, () => {
