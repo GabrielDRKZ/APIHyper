@@ -42,6 +42,11 @@ const PORT = process.env.PORT || 3000;
 // Habilitando o CORS
 app.use(cors());
 
+// Rota para responder com "oi" quando o resultado for "/"
+app.get('/', (req, res) => {
+    res.send('oi');
+});
+
 // Rota para obter os dados do usuário
 app.get('/whatsapp/authV2', async (req, res) => {
     try {
