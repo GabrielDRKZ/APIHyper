@@ -67,24 +67,35 @@ app.get('/whatsapp/authV2', async (req, res) => {
     }
 });
 
-// Rota para salvar as informações do usuário
-app.post('/whatsapp/saveUser', async (req, res) => {
+// Rota para salvar os dados do usuário
+app.get('/whatsapp/saveUser', async (req, res) => {
     try {
-        const userData = req.body; // Obtenha os dados do corpo da solicitação
+        const { userName, phoneNumber } = req.query;
+        console.log(`Recebida consulta para o usuário ${userName} com o número de telefone ${phoneNumber}`);
+        
+        // Verifica se o usuário já existe no banco de dados
+        const existingUser = await UserModel.findOne({ userName, phoneNumber });
 
-        // Crie uma instância do modelo de usuário com os dados fornecidos
-        const newUser = new UserModel(userData);
+        // Se o usuário já existe, retornar uma mensagem indicando que o usuário já está registrado
+        if (existingUser) {
+            console.log('Usuário já está registrado no banco de dados');
+            return res.status(400).json({ error: 'Usuário já está registrado' });
+        }
 
-        // Salve o novo usuário no banco de dados
+        // Cria uma nova instância do modelo de usuário com os dados fornecidos
+        const newUser = new UserModel({ userName, phoneNumber });
+
+        // Salva o novo usuário no banco de dados
         await newUser.save();
 
         console.log('Usuário salvo com sucesso:', newUser);
-        res.status(201).json(newUser); // Retorne o novo usuário salvo
+        res.status(201).json(newUser); // Retorna o novo usuário salvo
     } catch (error) {
         console.error('Erro ao salvar usuário:', error);
         res.status(500).json({ error: 'Erro ao salvar usuário' });
     }
 });
+
 
 // Iniciar o servidor
 app.listen(PORT, () => {
