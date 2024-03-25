@@ -62,6 +62,24 @@ app.get('/whatsapp/authV2', async (req, res) => {
     }
 });
 
+// Rota para salvar as informações do usuário
+app.post('/whatsapp/saveUser', async (req, res) => {
+    try {
+        const userData = req.body; // Obtenha os dados do corpo da solicitação
+
+        // Crie uma instância do modelo de usuário com os dados fornecidos
+        const newUser = new UserModel(userData);
+
+        // Salve o novo usuário no banco de dados
+        await newUser.save();
+
+        console.log('Usuário salvo com sucesso:', newUser);
+        res.status(201).json(newUser); // Retorne o novo usuário salvo
+    } catch (error) {
+        console.error('Erro ao salvar usuário:', error);
+        res.status(500).json({ error: 'Erro ao salvar usuário' });
+    }
+});
 
 // Iniciar o servidor
 app.listen(PORT, () => {
