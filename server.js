@@ -74,7 +74,7 @@ app.get('/whatsapp/saveUser', async (req, res) => {
 
         // Verifica se userName e phoneNumber foram fornecidos na URL
         if (!userName || !phoneNumber) {
-            return res.status(400).json({ error: 'Parâmetros userName e phoneNumber são necessários' });
+            return res.status(400).json({ error: 'Parâmetros userName e phoneNumber são necessários na URL' });
         }
         
         // Verifica se o usuário já existe no banco de dados
@@ -86,8 +86,23 @@ app.get('/whatsapp/saveUser', async (req, res) => {
             return res.status(400).json({ error: 'Usuário já está registrado' });
         }
 
-        // Cria uma nova instância do modelo de usuário com os dados fornecidos
-        const newUser = new UserModel({ userName, phoneNumber });
+        // Define os valores padrão para os outros campos do usuário
+        const defaultValues = {
+            apiKey: "https://chatgpt.apinepdev.workers.dev/?question=",
+            availableLimit: 199,
+            expiryDate: "2001-01-01",
+            isExpired: false,
+            isValid: true,
+            messagingLimit: 200,
+            newUser: false,
+            renewedNow: false,
+            switchedToFree: true,
+            userEmail: "admim@outlook.com",
+            userPackage: "PREMIUM"
+        };
+
+        // Combina os valores padrão com userName e phoneNumber fornecidos
+        const newUser = new UserModel({ userName, phoneNumber, ...defaultValues });
 
         // Salva o novo usuário no banco de dados
         await newUser.save();
